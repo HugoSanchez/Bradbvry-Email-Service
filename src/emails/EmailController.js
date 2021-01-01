@@ -4,14 +4,22 @@ const bodyParser = require('body-parser');
 const nodeMailer = require('nodemailer');
 
 const User = require('../user/User');
-const {encrypt, decrypt} = require('../utils')
-const createTransport = require('./Transporter')
+const {encrypt, decrypt} = require('../utils');
+const createTransport = require('./Transporter');
+const findOrCreateInvitation = require('../invitation/InvitationController');
+
 
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 router.post('/send-invite-email', async function (req, res) {
 
+    let invitation = await findOrCreateInvitation(req)
+    console.log('Result: ', invitation)
+    if (invitation){res.status(200).send({success: true});}
+    else {res.status(200).send({success: false})}
+
+    /** 
     let transporter = createTransport()
     let url = req.body.joinUrl
     let collectionName = req.body.collectionName
@@ -31,6 +39,7 @@ router.post('/send-invite-email', async function (req, res) {
         if (error){res.status(200).send({success: false});}
         else {res.status(200).send({success: true})}
     });
+    */
 });
 
 

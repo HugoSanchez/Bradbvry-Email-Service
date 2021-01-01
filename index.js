@@ -17,7 +17,7 @@ const EmailController = require('./src/emails/EmailController');
 app.use('/api/share/', EmailController)
 
 app.listen(port, function(req, res){
-console.log('Server is RUNNING at port: ', port);
+    console.log('Server is RUNNING at port: ', port);
 });
 
 
