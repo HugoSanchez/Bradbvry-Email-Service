@@ -1,5 +1,6 @@
 let Invitation = require('./Invitation');
-let {encrypt} = require('../utils')
+let {encrypt} = require('../utils');
+let { v4: uuidv4 } = require('uuid');
 
 module.exports = findOrCreateInvitation = async (req) => {
 
@@ -7,9 +8,11 @@ module.exports = findOrCreateInvitation = async (req) => {
     // Encrypting everything that might be saved in the DB.
     let acknowledged = true
     let createdAt = Date.now() 
+    let senderEmail = encrypt(req.body.sender)
     let senderAddress = encrypt(req.body.senderAddress)
     let collectionName = encrypt(req.body.collectionName)
     let collectionAddress = encrypt(req.body.collectionAddress)
+    let collectionInfo = encrypt(req.body.collectionInfo)
     let recipientEmail = encrypt(req.body.recipientEmail)
 
     // Execute query on MongoDB.
@@ -31,7 +34,6 @@ module.exports = findOrCreateInvitation = async (req) => {
         if (invitation.acknowledged === true) {
             invitation.acknowledged = false
             invitation.save()
-            console.log('2: ', invitation)
             return invitation
         } else {
             // If not, just return the instance.
@@ -41,14 +43,19 @@ module.exports = findOrCreateInvitation = async (req) => {
     } else {
         // If no instance exists, it is the first invitation
         // and we need to save the intance in the DB.
+        let secret = uuidv4()
         let newInvitation = await Invitation.create({
 
+            senderEmail,
             acknowledged,
             createdAt,
+            // identityStr,
             senderAddress,
             collectionName,
             collectionAddress,
-            recipientEmail
+            collectionInfo,
+            recipientEmail,
+            secret
 
         })
 

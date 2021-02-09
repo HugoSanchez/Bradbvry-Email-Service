@@ -1,11 +1,15 @@
-var mongoose = require('mongoose');  
-var InvitationSchema = new mongoose.Schema({  
+let mongoose = require('mongoose');  
+
+let InvitationSchema = new mongoose.Schema({  
   collectionName: String,
   collectionAddress: String,
+  senderEmail: String,
   senderAddress: String, 
   recipientEmail: String,
+  collectionInfo: String,
   acknowledged: Boolean,
-  createdAt: Number
+  createdAt: Number,
+  secret: String,
 });
 
 mongoose.model('Invitation', InvitationSchema);

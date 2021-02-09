@@ -22,7 +22,8 @@
     "node-url-shortener": "^1.1.7",
     "nodemailer": "^6.3.1",
     "nodemailer-express-handlebars": "^3.1.0",
-    "promise": "^8.0.2"
+    "promise": "^8.0.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "nodemon": "^1.19.4"
