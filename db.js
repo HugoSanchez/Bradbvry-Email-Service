@@ -11,6 +11,6 @@ mongoose.connection.on("open", function(ref) {
 });
   
 mongoose.connection.on("error", function(err) {
-    console.log("Could not connect to mongo server!");
+    console.log("Error: Could NOT connect to mongo server!");
     return console.log(err);
 });

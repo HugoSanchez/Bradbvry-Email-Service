@@ -1,3 +1,5 @@
+;global.WebSocket = require('isomorphic-ws')
+
 let db = require('./db');
 var cors = require('cors')
 let express = require('express')
@@ -13,8 +15,12 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(findOrCreateUserMiddleware);
 
+const CollectionsController = require('./src/collections/CollectionsController');
+app.use('/api/', CollectionsController)
+
 const EmailController = require('./src/emails/EmailController');
 app.use('/api/share/', EmailController)
+
 
 app.listen(port, function(req, res){
     console.log('Server is RUNNING at port: ', port);

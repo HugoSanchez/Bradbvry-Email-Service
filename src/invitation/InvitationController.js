@@ -49,7 +49,6 @@ module.exports = findOrCreateInvitation = async (req) => {
             senderEmail,
             acknowledged,
             createdAt,
-            // identityStr,
             senderAddress,
             collectionName,
             collectionAddress,
