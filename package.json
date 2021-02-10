@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fleekhq/fleek-storage-js": "^1.0.11",
+    "@pinata/sdk": "^1.1.11",
     "@textile/hub": "^6.0.2",
     "axios": "^0.18.0",
     "bcryptjs": "^2.4.3",
@@ -21,10 +23,12 @@
     "express": "^4.17.1",
     "isomorphic-ws": "^4.0.1",
     "mongoose": "^5.0.1",
+    "multer": "^1.4.2",
     "node-url-shortener": "^1.1.7",
     "nodemailer": "^6.3.1",
     "nodemailer-express-handlebars": "^3.1.0",
     "promise": "^8.0.2",
+    "streamifier": "^0.1.1",
     "uuid": "^8.3.2",
     "ws": "^7.4.3"
   },

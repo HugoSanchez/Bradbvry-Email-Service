@@ -2,7 +2,7 @@ let User = require('./User');
 let {encrypt} = require('../utils')
 
 module.exports = findOrCreateUserMiddleware = (req, res, next) => {
-    console.log(req.body)
+
     if (req.body.email) {
         let email = encrypt(req.body.sender)
         let address = encrypt(req.body.senderAddress)
