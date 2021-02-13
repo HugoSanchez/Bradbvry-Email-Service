@@ -22,12 +22,6 @@ app.use('/api/share/', EmailController)
 
 app.listen(port, function(req, res){
     console.log('Server is RUNNING at port: ', port);
-});
-
-
-
-
-
-
+})
 
 
