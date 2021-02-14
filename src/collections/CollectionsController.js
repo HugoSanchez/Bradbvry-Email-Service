@@ -5,65 +5,48 @@ const client = require('../../client')
 const fleekStorage = require('@fleekhq/fleek-storage-js');
 const {ThreadID,} = require('@textile/hub');
 const multer  = require('multer');
-const Arweave = require('arweave');
-const jsonWallet = require('../../arweave-key-6nJ1p8ZcUvclj5AVQixhm-zJm838wSfMCgCk6_wiwnE.json')
+const { v4: uuidv4 } = require('uuid');
 
-const arweave = Arweave.init({
-    host: "arweave.net",
-    protocol: "https",
-    port: 443,
-    logging: false,
-    timeout: 15000,
-});
-
-
+// Instantiate multer, 
+// do not store file, just in memory.
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 
+// Body parse the thing.
+// This will be deprecated.
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
+// Take content and upload that content into IPFS.
+// All collections entries content is stored in IPFS via Fleek.
+// Users wil have the option to make that content persistent in Arweave
+// in the near future. This allows to de-duplicate things.
 router.post('/uploadToIpfs', upload.any(), async function (req, res) {
 
-    let files = req.files
-    console.log('re: ', req.files)
-    console.log('re type: ', typeof req.files)
+    let contentType = req.body.type
+    let isImage = contentType.includes('image')
 
-    var imageBuffer = req.files[0].buffer;
-    var imageName = 'public/images/map.png';
-    
-    // let x = fs.createReadStream(imageBuffer);
-    let dataToSend = {name: 'something', lastname: 'something else'}
+    let dataToUpload
+    if (isImage) {dataToUpload = req.files[0].buffer}
+    else {dataToUpload = JSON.stringify(req.body.entry)}
 
-    let transaction = await arweave.createTransaction({
-        data: imageBuffer,
-        quantity: arweave.ar.arToWinston('0.000000100011')
-    }, jsonWallet);
-
-    transaction.addTag('Content-Type', req.files[0].mimetype);
-    // Now we sign the transaction
-    await arweave.transactions.sign(transaction, jsonWallet, {saltLength: 10});
-
-    // After is signed, we send the transaction
-   let post = await arweave.transactions.post(transaction);
-    console.log('Post: ?', post)
-
-    console.log('TX: ', transaction)
-    
-    /**
     let uploadedFile = await fleekStorage.upload({
-        data: req.files[0].buffer,
-        key: '00009',
+        data: dataToUpload,
+        key: uuidv4(),
         apiKey: process.env.FLEEK_API_KEY,
         apiSecret: process.env.FLEEK_API_SECRET,
     });
 
-    console.log('Here')
-    */
-
-    res.status(200).send({success: true, jsonWallet})
+    let hash = uploadedFile.hashV0
+    let contentURI = `https://ipfs.io/ipfs/${hash}`;
+    res.status(200).send({success: true, contentURI})
 });
 
+
+// Get all collections from a given user by their
+// Ethereum address. Returns collections array.
+// This route is called when user is not logged in yet
+// so that there could be public profiles. This is temporary.
 router.get('/collections/:owner', async function (req, res) {
 
     let owner = req.params.owner   
@@ -75,6 +58,11 @@ router.get('/collections/:owner', async function (req, res) {
     res.status(200).send({success: true, collections})
 });
 
+
+// Get all entries from a specific collection. 
+// It, gets all collections, filters to a specific collection,
+// and retrrieves all entries from that collection.
+// This is very ineficient and should be changed.
 router.get('/collections/:owner/:collectionName', async function (req, res) {
 
     let owner = req.params.owner
@@ -88,7 +76,9 @@ router.get('/collections/:owner/:collectionName', async function (req, res) {
 
     let colID = await ThreadID.fromString(collection[0].threadId)
     let entries = await TexClient.find(colID, 'entries', {})
+
     res.status(200).send({success: true, entries})
 });
+
 
 module.exports = router;
