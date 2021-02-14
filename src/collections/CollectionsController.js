@@ -23,6 +23,8 @@ router.use(bodyParser.json());
 // in the near future. This allows to de-duplicate things.
 router.post('/uploadToIpfs', upload.any(), async function (req, res) {
 
+    console.log('RE: ', req.files)
+
     let contentType = req.body.type
     let isImage = contentType.includes('image')
 
@@ -37,8 +39,10 @@ router.post('/uploadToIpfs', upload.any(), async function (req, res) {
         apiSecret: process.env.FLEEK_API_SECRET,
     });
 
-    let hash = uploadedFile.hashV0
-    let contentURI = `https://ipfs.io/ipfs/${hash}`;
+    console.log('UPÑ: ', uploadedFile)
+
+    let hash = uploadedFile.hash
+    let contentURI = `https://ipfs.fleek.co/ipfs/${hash}`;
     res.status(200).send({success: true, contentURI})
 });
 
