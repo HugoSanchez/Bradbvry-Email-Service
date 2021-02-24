@@ -23,8 +23,6 @@ router.use(bodyParser.json());
 // in the near future. This allows to de-duplicate things.
 router.post('/uploadToIpfs', upload.any(), async function (req, res) {
 
-    console.log('RE: ', req.files)
-
     let contentType = req.body.type
     let isImage = contentType.includes('image')
 
@@ -81,7 +79,26 @@ router.get('/collections/:owner/:collectionName', async function (req, res) {
     let colID = await ThreadID.fromString(collection[0].threadId)
     let entries = await TexClient.find(colID, 'entries', {})
 
-    res.status(200).send({success: true, entries})
+    res.status(200).send({success: true, entries, collection})
+});
+
+router.get('/collections/:owner/:collectionName/:itemId', async function (req, res) {
+
+    let owner = req.params.owner
+    let itemId = req.params.itemId
+    let colName = req.params.collectionName 
+
+    let TexClient = await client() 
+    let threadID = await ThreadID.fromString(process.env.GLOBAL_THREAD_ID)
+    let rawCollections = await TexClient.find(threadID, 'public-collections', {})
+    let collection = rawCollections.filter(collection => 
+        collection.owner.ethAddress === owner && collection.name === colName)
+
+    let colID = await ThreadID.fromString(collection[0].threadId)
+    let entries = await TexClient.find(colID, 'entries', {})
+    let item = entries.filter(item => item._id === itemId)
+
+    res.status(200).send({success: true, entries, collection, item})
 });
 
 
