@@ -101,5 +101,34 @@ router.get('/collections/:owner/:collectionName/:itemId', async function (req, r
     res.status(200).send({success: true, entries, collection, item})
 });
 
+router.post('/add/collections', async function (req, res) {
+
+    let collection = req.body
+
+    let TexClient = await client() 
+    let threadID = await ThreadID.fromString(process.env.GLOBAL_THREAD_ID)    
+    await TexClient.create(threadID, 'public-collections', [collection])
+
+    res.status(200).send({success: true})
+});
+
+router.post('/delete/collections', async function (req, res) {
+
+    let collectionID = req.body.id
+
+    let TexClient = await client() 
+    let threadID = await ThreadID.fromString(process.env.GLOBAL_THREAD_ID)    
+    
+    let rawCollections = await TexClient.find(threadID, 'public-collections', {})
+    let collection = rawCollections.filter(collection => 
+        collection.id === collectionID)
+    
+    if (collection[0]) {
+        let _ID = collection[0]._id
+        await TexClient.delete(threadID, 'public-collections', [_ID])
+    }
+    
+    res.status(200).send({success: true})
+});
 
 module.exports = router;
