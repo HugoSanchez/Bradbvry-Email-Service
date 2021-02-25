@@ -1,6 +1,5 @@
 ;global.WebSocket = require('isomorphic-ws')
 
-let db = require('./db');
 var cors = require('cors')
 let express = require('express')
 let findOrCreateUserMiddleware = require('./src/user/UserMiddleware');

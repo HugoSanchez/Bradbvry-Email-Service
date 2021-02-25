@@ -37,8 +37,6 @@ router.post('/uploadToIpfs', upload.any(), async function (req, res) {
         apiSecret: process.env.FLEEK_API_SECRET,
     });
 
-    console.log('UPÑ: ', uploadedFile)
-
     let hash = uploadedFile.hash
     let contentURI = `https://ipfs.fleek.co/ipfs/${hash}`;
     res.status(200).send({success: true, contentURI})
