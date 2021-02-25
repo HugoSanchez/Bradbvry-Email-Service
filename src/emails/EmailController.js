@@ -16,8 +16,8 @@ router.post('/send-invite-email', async function (req, res) {
 
     console.log('   ----- 1 -----   ')
 
-    let invitation = await findOrCreateInvitation(req)
-    if (!invitation){res.status(500).send({success: false})}
+    //let invitation = await findOrCreateInvitation(req)
+    // if (!invitation){res.status(500).send({success: false})}
 
     console.log('   ----- 2 -----   ')
 
