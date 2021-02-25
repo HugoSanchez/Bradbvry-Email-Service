@@ -104,7 +104,7 @@ router.get('/collections/:owner/:collectionName/:itemId', async function (req, r
 router.post('/add/collections', async function (req, res) {
 
 
-    
+
     let collection = req.body
 
     let TexClient = await client() 
@@ -131,6 +131,12 @@ router.post('/delete/collections', async function (req, res) {
     }
 
     res.status(200).send({success: true})
+});
+
+router.get('/', async function (req, res) {
+
+    res.status(200).send({success: true})
+
 });
 
 module.exports = router;
