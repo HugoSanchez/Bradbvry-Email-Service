@@ -6,12 +6,7 @@ const fleekStorage = require('@fleekhq/fleek-storage-js');
 const {ThreadID,} = require('@textile/hub');
 const multer  = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const cors = require('cors');
 
-let corsOptions = {
-    origin: 'https://bradbvry.now.sh',
-    optionsSuccessStatus: 200 // For legacy browser support
-}
 
 // Instantiate multer, 
 // do not store file, just in memory.
@@ -54,7 +49,7 @@ router.post('/uploadToIpfs', upload.any(), async function (req, res) {
 // Ethereum address. Returns collections array.
 // This route is called when user is not logged in yet
 // so that there could be public profiles. This is temporary.
-router.get('/collections/:owner', cors() ,async function (req, res) {
+router.get('/collections/:owner', async function (req, res) {
 
     let owner = req.params.owner   
     let TexClient = await client()    
