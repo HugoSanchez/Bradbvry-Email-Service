@@ -54,7 +54,7 @@ router.post('/uploadToIpfs', upload.any(), async function (req, res) {
 // Ethereum address. Returns collections array.
 // This route is called when user is not logged in yet
 // so that there could be public profiles. This is temporary.
-router.get('/collections/:owner', cors(corsOptions),async function (req, res) {
+router.get('/collections/:owner', cors() ,async function (req, res) {
 
     let owner = req.params.owner   
     let TexClient = await client()    
