@@ -1,5 +1,4 @@
 const nodeMailer = require('nodemailer');
-const handlebars = require('nodemailer-express-handlebars');
 
 module.exports = createTransport = () => {
     return nodeMailer.createTransport({
