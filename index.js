@@ -14,7 +14,7 @@ let corsOptions = {
 
 app.use(cors())
 app.use(express.json({limit: '5000mb'}));
-app.use(express.urlencoded({limit: '5000mb'}));
+app.use(express.urlencoded({limit: '5000mb', extended: true}));
 
 
 const CollectionsController = require('./src/collections/CollectionsController');
