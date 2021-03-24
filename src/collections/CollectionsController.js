@@ -54,6 +54,7 @@ router.get('/collections/:owner', async function (req, res) {
     let owner = req.params.owner   
     let TexClient = await client()    
     let threadID = await ThreadID.fromString(process.env.GLOBAL_THREAD_ID)
+    // await TexClient.delete(threadID, 'public-collections', ["01ezf951fxg6mkt6shxmfe3nmp"])
     let rawCollections = await TexClient.find(threadID, 'public-collections', {})
     let collections = rawCollections.filter(collection => collection.owner.ethAddress === owner)
 
@@ -103,8 +104,6 @@ router.get('/collections/:owner/:collectionName/:itemId', async function (req, r
 
 router.post('/add/collections', async function (req, res) {
 
-
-
     let collection = req.body
 
     let TexClient = await client() 
@@ -133,10 +132,44 @@ router.post('/delete/collections', async function (req, res) {
     res.status(200).send({success: true})
 });
 
-router.get('/', async function (req, res) {
+router.post('/update/collections', async function (req, res) {
+
+    let collectionToUpdate = req.body.collection
+
+    console.log('COL: ', collectionToUpdate)
+
+    let TexClient = await client() 
+    let threadID = await ThreadID.fromString(process.env.GLOBAL_THREAD_ID)    
+    
+    let rawCollections = await TexClient.find(threadID, 'public-collections', {})
+    let collection = rawCollections.filter(collection => 
+        collection.id === collectionToUpdate.id)
+    
+    if (collection[0]) {
+        collectionToUpdate._id = collection[0]._id
+        await TexClient.save(threadID, 'public-collections', [collectionToUpdate])
+    }
 
     res.status(200).send({success: true})
+});
 
+router.post('/follow', async function (req, res) {
+    let TexClient = await client() 
+    let threadID = await ThreadID.fromString(req.body.threadID)    
+    await TexClient.create(threadID, 'followers', [req.body.follower])
+    res.status(200).send({success: true})
+});
+
+router.post('/unfollow', async function (req, res) {
+    let TexClient = await client() 
+    let threadID = await ThreadID.fromString(req.body.threadID)    
+    await TexClient.delete(threadID, 'followers', [req.body.followID, "01f1jq27vqm5882exebk23jx0s"])
+    res.status(200).send({success: true})
+});
+
+
+router.get('/', async function (req, res) {
+    res.status(200).send({success: true})
 });
 
 module.exports = router;

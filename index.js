@@ -1,5 +1,6 @@
 ;global.WebSocket = require('isomorphic-ws')
 require('dotenv').config();
+let client = require('./client')
 
 let cors = require('cors')
 let express = require('express')
@@ -12,7 +13,7 @@ let corsOptions = {
     optionsSuccessStatus: 200 // For legacy browser support
 }
 
-app.use(cors(corsOptions))
+app.use(cors())
 app.use(express.json({limit: '5000mb'}));
 app.use(express.urlencoded({limit: '5000mb'}));
 
@@ -27,4 +28,10 @@ app.listen(port, function(req, res){
     console.log('Server is RUNNING at port: ', port);
 })
 
+
+const callClient = async () => {
+    await client()
+}
+
+callClient()
 

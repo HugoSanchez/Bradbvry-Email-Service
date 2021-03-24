@@ -5,7 +5,6 @@ const client = async () => {
     let client = await Client.withKeyInfo({key: process.env.TEXTILE_HUB_KEY})
     await client.getToken(identity)  
     return client
-
 }
 
 module.exports = client;
