@@ -54,7 +54,6 @@ router.get('/collections/:owner', async function (req, res) {
     let owner = req.params.owner   
     let TexClient = await client()    
     let threadID = await ThreadID.fromString(process.env.GLOBAL_THREAD_ID)
-    // await TexClient.delete(threadID, 'public-collections', ["01ezf951fxg6mkt6shxmfe3nmp"])
     let rawCollections = await TexClient.find(threadID, 'public-collections', {})
     let collections = rawCollections.filter(collection => collection.owner.ethAddress === owner)
 
