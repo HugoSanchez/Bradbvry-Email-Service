@@ -6,6 +6,7 @@ const fleekStorage = require('@fleekhq/fleek-storage-js');
 const {ThreadID,} = require('@textile/hub');
 const multer  = require('multer');
 const { v4: uuidv4 } = require('uuid');
+const cors = require('cors')
 
 
 // Instantiate multer, 
@@ -22,7 +23,7 @@ router.use(bodyParser.json());
 // All collections entries content is stored in IPFS via Fleek.
 // Users wil have the option to make that content persistent in Arweave
 // in the near future. This allows to de-duplicate things.
-router.post('/uploadToIpfs', upload.any(), async function (req, res) {
+router.post('/uploadToIpfs', cors(), upload.any(), async function (req, res) {
 
     let contentType = req.body.type
     let isImage = contentType.includes('image')
@@ -49,7 +50,7 @@ router.post('/uploadToIpfs', upload.any(), async function (req, res) {
 // Ethereum address. Returns collections array.
 // This route is called when user is not logged in yet
 // so that there could be public profiles. This is temporary.
-router.get('/collections/:owner', async function (req, res) {
+router.get('/collections/:owner', cors(), async function (req, res) {
 
     let owner = req.params.owner   
     let TexClient = await client()    
