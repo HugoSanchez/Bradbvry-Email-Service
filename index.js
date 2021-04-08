@@ -1,7 +1,7 @@
 ;global.WebSocket = require('isomorphic-ws')
 require('dotenv').config();
 let client = require('./client')
-
+let db = require('./db');
 let cors = require('cors')
 let express = require('express')
 
@@ -23,6 +23,9 @@ app.use('/api/', CollectionsController)
 
 const EmailController = require('./src/emails/EmailController');
 app.use('/api/share/', EmailController)
+
+const UserRoutes = require('./src/user/UserRoutes');
+app.use('/api/user/', UserRoutes)
 
 app.listen(port, function(req, res){
     console.log('Server is RUNNING at port: ', port);

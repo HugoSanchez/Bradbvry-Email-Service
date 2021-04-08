@@ -4,6 +4,7 @@ const key = process.env.AES_KEY;
 const iv = process.env.AES_IV;
 
 const encrypt = (string) => {
+    console.log('here: ', string)
     let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key, 'hex'), Buffer.from(iv, 'hex'));
     let encrypted = cipher.update(string);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
