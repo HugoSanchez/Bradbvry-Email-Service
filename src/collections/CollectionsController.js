@@ -28,7 +28,7 @@ router.use(bodyParser.json());
 router.post('/uploadToIpfs', cors(), upload.any(), async function (req, res) {
 
     let contentType = req.body.type
-    let isImage = contentType.includes('image')
+    let isImage = contentType.includes('image') || contentType.includes('video')
 
     let dataToUpload
     console.log(req.files)
