@@ -4,15 +4,15 @@ let { v4: uuidv4 } = require('uuid');
 
 module.exports = findOrCreateInvitation = async (req) => {
 
-    // We start we destructuring the req.body object and by
+    // We start by destructuring the req.body object and by
     // Encrypting everything that might be saved in the DB.
     let acknowledged = true
     let createdAt = Date.now() 
+
     let senderEmail = encrypt(req.body.sender)
     let senderAddress = encrypt(req.body.senderAddress)
     let collectionName = encrypt(req.body.collectionName)
     let collectionAddress = encrypt(req.body.collectionAddress)
-    let collectionInfo = encrypt(req.body.collectionInfo)
     let recipientEmail = encrypt(req.body.recipientEmail)
 
     // Execute query on MongoDB.
@@ -52,7 +52,6 @@ module.exports = findOrCreateInvitation = async (req) => {
             senderAddress,
             collectionName,
             collectionAddress,
-            collectionInfo,
             recipientEmail,
             secret
 
