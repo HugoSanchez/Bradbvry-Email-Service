@@ -8,7 +8,8 @@ const multer  = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const {encrypt, decrypt} = require('../utils');
 const User = require('../user/User');
-const cors = require('cors')
+const Invitation = require('../invitation/Invitation');
+const cors = require('cors');
 
 
 // Instantiate multer, 
@@ -100,6 +101,35 @@ router.get('/collections/:owner/:threadID/:itemId', async function (req, res) {
 
     res.status(200).send({success: true, entries, collection, item})
 });
+
+router.post('/add-invited-member', async function (req, res) {
+
+    console.log(req.body)
+    let secret = req.body.secret
+    let senderAddress = encrypt(req.body.inviter)
+    let recipientEmail = encrypt(req.body.acceptantEmail)
+    let collectionAddress = encrypt(req.body.collectionAddress)
+
+    let invite = await Invitation.findOne({
+        secret,
+        senderAddress,
+        recipientEmail,
+        collectionAddress})
+            .exec()
+
+    console.log('Invite: ', invite)
+    /** 
+    let TexClient = await client() 
+    let threadID = await ThreadID.fromString(req.params.collectionAddress)
+    let entries = await TexClient.find(threadID, 'entries', {})
+    let collection = await TexClient.find(threadID, 'config', {})
+    let item = entries.filter(item => item._id === req.params.itemId)
+    */
+
+    res.status(200).send({success: true, invite})
+});
+
+
 
 router.post('/follow', async function (req, res) {
     let TexClient = await client() 
