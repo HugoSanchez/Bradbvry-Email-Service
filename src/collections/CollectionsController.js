@@ -22,17 +22,16 @@ const upload = multer({ storage: storage })
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
-// Take content and upload that content into IPFS.
-// All collections entries content is stored in IPFS via Fleek.
-// Users wil have the option to make that content persistent in Arweave
-// in the near future. This allows to de-duplicate things.
-router.post('/uploadToIpfs', cors(), upload.any(), async function (req, res) {
 
+router.post('/uploadToIpfs', cors(), upload.any(), async function (req, res) {
+    // Take content and upload that content into IPFS.
+    // All collections entries content is stored in IPFS via Fleek.
+    // Users wil have the option to make that content persistent in Arweave
+    // in the near future. This allows to de-duplicate things.
     let contentType = req.body.type
     let isImage = contentType.includes('image') || contentType.includes('video')
 
     let dataToUpload
-    console.log(req.files)
     if (isImage) {dataToUpload = req.files[0].buffer}
     else {dataToUpload = JSON.stringify(req.body.entry)}
 
@@ -49,12 +48,12 @@ router.post('/uploadToIpfs', cors(), upload.any(), async function (req, res) {
 });
 
 
-// Get all collections from a given user by their
-// Ethereum address. Returns collections array.
-// This route is called when user is not logged in yet
-// so that there could be public profiles. This is temporary.
+
 router.get('/collections/:address', cors(), async function (req, res) {
-    
+    // Get all collections from a given user by their
+    // Ethereum address. Returns collections array.
+    // This route is called when user is not logged in yet
+    // so that there could be public profiles. This is temporary.
     console.time('e')
     let TexClient = await client()
     console.timeEnd('e')
@@ -75,12 +74,11 @@ router.get('/collections/:address', cors(), async function (req, res) {
 });
 
 
-// Get all entries from a specific collection. 
-// It, gets all collections, filters to a specific collection,
-// and retrrieves all entries from that collection.
-// This is very ineficient and should be changed.
-router.get('/collections/:owner/:threadID', async function (req, res) {
 
+router.get('/collections/:owner/:threadID', async function (req, res) {
+    // Get all entries from a specific collection. 
+    // It, gets all collections, filters to a specific collection,
+    // and retrrieves all entries from that collection.
     let collectionID = req.params.threadID 
 
     let TexClient = await client() 
@@ -102,35 +100,6 @@ router.get('/collections/:owner/:threadID/:itemId', async function (req, res) {
     res.status(200).send({success: true, entries, collection, item})
 });
 
-router.post('/add-invited-member', async function (req, res) {
-
-    console.log(req.body)
-    let secret = req.body.secret
-    let senderAddress = encrypt(req.body.inviter)
-    let recipientEmail = encrypt(req.body.acceptantEmail)
-    let collectionAddress = encrypt(req.body.collectionAddress)
-
-    let invite = await Invitation.findOne({
-        secret,
-        senderAddress,
-        recipientEmail,
-        collectionAddress})
-            .exec()
-
-    console.log('Invite: ', invite)
-    /** 
-    let TexClient = await client() 
-    let threadID = await ThreadID.fromString(req.params.collectionAddress)
-    let entries = await TexClient.find(threadID, 'entries', {})
-    let collection = await TexClient.find(threadID, 'config', {})
-    let item = entries.filter(item => item._id === req.params.itemId)
-    */
-
-    res.status(200).send({success: true, invite})
-});
-
-
-
 router.post('/follow', async function (req, res) {
     let TexClient = await client() 
     let threadID = await ThreadID.fromString(req.body.threadID)    
@@ -143,6 +112,55 @@ router.post('/unfollow', async function (req, res) {
     let threadID = await ThreadID.fromString(req.body.threadID)    
     await TexClient.delete(threadID, 'followers', [req.body.followID, "01f1jq27vqm5882exebk23jx0s"])
     res.status(200).send({success: true})
+});
+
+router.post('/add-invited-member', async function (req, res) {
+
+    let secret = req.body.secret
+    let senderAddress = encrypt(req.body.inviter)
+    let recipientEmail = encrypt(req.body.acceptantEmail)
+    let collectionAddress = encrypt(req.body.collectionAddress)
+
+    let invite = await Invitation.findOne({
+
+        secret,
+        senderAddress,
+        recipientEmail,
+        collectionAddress
+    
+    })
+
+        .exec()
+
+
+    if (!!invite) {
+
+        let TexClient = await client() 
+        let threadID = await ThreadID.fromString(req.body.collectionAddress)
+        let collection = await TexClient.find(threadID, 'config', {})
+        let keyOwners =  collection[0].keyOwners
+        console.log(collection)
+        let newOwner = {
+            memberId: req.body.acceptantID,
+            memberAddress: req.body.acceptantEthAddress,
+            memberPubkey: req.body.acceptantPubkey,
+            collectionKey: '',
+            acknowledged: false
+        }
+
+        let includes = keyOwners.filter(ko => ko.memberAddress === req.body.acceptantEthAddress)
+
+        if (!includes[0]) {
+            keyOwners.push(newOwner)
+            collection.keyOwners = keyOwners
+            await TexClient.save(threadID, 'config', collection)
+            // send email to acknowledge user pending
+            res.status(200).send({success: true})
+        }
+        else {
+            res.status(200).send({success: false, message: 'Key owner already exists'}) 
+        }
+    }
 });
 
 
