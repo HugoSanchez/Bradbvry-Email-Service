@@ -9,6 +9,9 @@ const { v4: uuidv4 } = require('uuid');
 const {encrypt, decrypt} = require('../utils');
 const User = require('../user/User');
 const Invitation = require('../invitation/Invitation');
+const createTransport = require('../emails/Transporter');
+const {getEmailOptions_Confirm} = require('../emails/utils');
+
 const cors = require('cors');
 
 
@@ -54,10 +57,7 @@ router.get('/collections/:address', cors(), async function (req, res) {
     // Ethereum address. Returns collections array.
     // This route is called when user is not logged in yet
     // so that there could be public profiles. This is temporary.
-    console.time('e')
-    let TexClient = await client()
-    console.timeEnd('e')
-  
+    let TexClient = await client()  
     let address = encrypt(req.params.address)
     let user = await User.findOne({address}).exec()
     let masterThreadID = decrypt(user.masterThreadID)
@@ -139,7 +139,7 @@ router.post('/add-invited-member', async function (req, res) {
         let threadID = await ThreadID.fromString(req.body.collectionAddress)
         let collection = await TexClient.find(threadID, 'config', {})
         let keyOwners =  collection[0].keyOwners
-        console.log(collection)
+
         let newOwner = {
             memberId: req.body.acceptantID,
             memberAddress: req.body.acceptantEthAddress,
@@ -154,13 +154,37 @@ router.post('/add-invited-member', async function (req, res) {
             keyOwners.push(newOwner)
             collection.keyOwners = keyOwners
             await TexClient.save(threadID, 'config', collection)
-            // send email to acknowledge user pending
+
+            let to = decrypt(invite.senderEmail)
+            let recepient = decrypt(invite.recipientEmail)
+            let collectionName = decrypt(invite.collectionName)
+            let collectionAddress = decrypt(invite.collectionAddress)
+            let address = decrypt(invite.senderAddress)
+            let url = `www.bradbvry.xyz/app/${address}/${collectionAddress}`
+            await sendConfirmEmail(to, recepient, collectionName, url)
             res.status(200).send({success: true})
+            console.log('there')
         }
         else {
             res.status(200).send({success: false, message: 'Key owner already exists'}) 
         }
     }
+});
+
+const sendConfirmEmail = async (to, recepient, collectionName, url, res) => {
+
+    let transporter = createTransport()
+    let mailOptions = getEmailOptions_Confirm(to, recepient, collectionName, url)
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error){res.status(200).send({success: false, error: error});}
+        else {console.log('success')}
+    });
+}
+
+router.post('/accept-member', async function (req, res) {
+
+   
 });
 
 
