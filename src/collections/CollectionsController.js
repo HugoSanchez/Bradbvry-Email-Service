@@ -115,7 +115,6 @@ router.post('/unfollow', async function (req, res) {
 });
 
 router.post('/add-invited-member', async function (req, res) {
-
     let secret = req.body.secret
     let senderAddress = encrypt(req.body.inviter)
     let recipientEmail = encrypt(req.body.acceptantEmail)
@@ -168,6 +167,8 @@ router.post('/add-invited-member', async function (req, res) {
         else {
             res.status(200).send({success: false, message: 'Key owner already exists'}) 
         }
+    } else {
+        res.status(200).send({success: false, message: 'Something wrong - could not find invite'})  
     }
 });
 
