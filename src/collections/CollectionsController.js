@@ -13,7 +13,10 @@ const createTransport = require('../emails/Transporter');
 const {getEmailOptions_Confirm} = require('../emails/utils');
 
 const cors = require('cors');
-const options = {origin: 'https://www.bradbvry.xyz'}
+const options = {
+    origin: 'https://www.bradbvry.xyz',
+    allowedHeaders: ['Content-Type', 'Authorization']
+}
 
 // Instantiate multer, 
 // do not store file, just in memory.
