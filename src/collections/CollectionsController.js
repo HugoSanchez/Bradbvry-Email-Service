@@ -13,7 +13,7 @@ const createTransport = require('../emails/Transporter');
 const {getEmailOptions_Confirm} = require('../emails/utils');
 
 const cors = require('cors');
-
+const options = {origin: 'https://www.bradbvry.xyz'}
 
 // Instantiate multer, 
 // do not store file, just in memory.
@@ -26,7 +26,7 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 
-router.post('/uploadToIpfs', cors(), upload.any(), async function (req, res) {
+router.post('/uploadToIpfs', cors(options), upload.any(), async function (req, res) {
     // Take content and upload that content into IPFS.
     // All collections entries content is stored in IPFS via Fleek.
     // Users wil have the option to make that content persistent in Arweave
@@ -52,7 +52,7 @@ router.post('/uploadToIpfs', cors(), upload.any(), async function (req, res) {
 
 
 
-router.get('/collections/:address', cors(), async function (req, res) {
+router.get('/collections/:address', cors(options), async function (req, res) {
     // Get all collections from a given user by their
     // Ethereum address. Returns collections array.
     // This route is called when user is not logged in yet
@@ -75,7 +75,7 @@ router.get('/collections/:address', cors(), async function (req, res) {
 
 
 
-router.get('/collections/:owner/:threadID', async function (req, res) {
+router.get('/collections/:owner/:threadID', cors(options), async function (req, res) {
     // Get all entries from a specific collection. 
     // It, gets all collections, filters to a specific collection,
     // and retrrieves all entries from that collection.
@@ -89,7 +89,7 @@ router.get('/collections/:owner/:threadID', async function (req, res) {
     res.status(200).send({success: true, entries, collection})
 });
 
-router.get('/collections/:owner/:threadID/:itemId', async function (req, res) {
+router.get('/collections/:owner/:threadID/:itemId', cors(options), async function (req, res) {
 
     let TexClient = await client() 
     let threadID = await ThreadID.fromString(req.params.threadID)
@@ -100,21 +100,21 @@ router.get('/collections/:owner/:threadID/:itemId', async function (req, res) {
     res.status(200).send({success: true, entries, collection, item})
 });
 
-router.post('/follow', async function (req, res) {
+router.post('/follow', cors(options), async function (req, res) {
     let TexClient = await client() 
     let threadID = await ThreadID.fromString(req.body.threadID)    
     await TexClient.create(threadID, 'followers', [req.body.follower])
     res.status(200).send({success: true})
 });
 
-router.post('/unfollow', async function (req, res) {
+router.post('/unfollow', cors(options), async function (req, res) {
     let TexClient = await client() 
     let threadID = await ThreadID.fromString(req.body.threadID)    
     await TexClient.delete(threadID, 'followers', [req.body.followID, "01f1jq27vqm5882exebk23jx0s"])
     res.status(200).send({success: true})
 });
 
-router.post('/add-invited-member', async function (req, res) {
+router.post('/add-invited-member', cors(options), async function (req, res) {
     let secret = req.body.secret
     let senderAddress = encrypt(req.body.inviter)
     let recipientEmail = encrypt(req.body.acceptantEmail)
@@ -182,11 +182,6 @@ const sendConfirmEmail = async (to, recepient, collectionName, url, res) => {
         else {console.log('success')}
     });
 }
-
-router.post('/accept-member', async function (req, res) {
-
-   
-});
 
 
 router.get('/', async function (req, res) {
