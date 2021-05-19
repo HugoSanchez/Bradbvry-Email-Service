@@ -6,7 +6,7 @@ let cors = require('cors')
 let express = require('express')
 
 let app = express();
-let port = process.env.PORT || 3003;
+let port = 5000;
 
 app.use(cors())
 app.use(express.json({limit: '5000mb'}));
