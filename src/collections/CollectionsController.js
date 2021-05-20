@@ -14,7 +14,7 @@ const {getEmailOptions_Confirm} = require('../emails/utils');
 
 const cors = require('cors');
 const options = {
-    origin: 'https://www.bradbvry.xyz',
+    origin: process.env.DEV ? '*' : "https://www.bradbvry.xyz/",
     allowedHeaders: ['Content-Type', 'Authorization']
 }
 
