@@ -30,6 +30,8 @@ router.use(bodyParser.json());
 
 
 router.post('/uploadToIpfs', cors(options), upload.any(), async function (req, res) {
+
+    
     // Take content and upload that content into IPFS.
     // All collections entries content is stored in IPFS via Fleek.
     // Users wil have the option to make that content persistent in Arweave
